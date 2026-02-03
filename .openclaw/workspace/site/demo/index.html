@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartService Demo Portal</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f2f5f3; color: #333; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 50px auto; background: white; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h1 { color: #3a863f; }
+    label { display: block; margin: 10px 0 5px; font-weight: bold; }
+    select, input[type=password] { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+    button { background-color: #3a863f; color: white; border: none; border-radius: 5px; padding: 10px; cursor: pointer; width: 100%; font-size: 1em; }
+    button:hover { background-color: #2e6b30; }
+    .reset-btn { background: #ccc; color: #333; margin-top: 20px; }
+    .reset-btn:hover { background: #aaa; }
+    .message { margin-top: 10px; font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SmartService Demo Portal</h1>
+    <p>Select a role and login to explore the demo system with mock data.</p>
+
+    <label for="userRole">User Role:</label>
+    <select id="userRole">
+      <option value="tenant">Tenant</option>
+      <option value="potentialTenant">Potential Tenant</option>
+      <option value="investor">Investor / Co-owner</option>
+    </select>
+
+    <label for="password">Password:</label>
+    <input type="password" id="password" placeholder="Enter password" />
+
+    <button id="loginBtn">Login</button>
+
+    <button id="resetBtn" class="reset-btn">Reset Demo Data</button>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    const defaultPasswords = {
+      tenant: "tenant123",
+      potentialTenant: "prospect123",
+      investor: "investor123"
+    };
+
+    const mockDataKey = "demoSmartServiceData";
+
+    // Load role-password on select change
+    const userRoleSelect = document.getElementById("userRole");
+    const passwordInput = document.getElementById("password");
+    const messageDiv = document.getElementById("message");
+
+    function loadPasswordForRole(role) {
+      passwordInput.value = defaultPasswords[role] || "";
+      messageDiv.textContent = "";
+    }
+
+    userRoleSelect.addEventListener("change", () => {
+      loadPasswordForRole(userRoleSelect.value);
+    });
+
+    loadPasswordForRole(userRoleSelect.value);
+
+    // Mock demo data
+    const originalMockData = {
+      tenant: { name: "John Doe", rentDue: "$850", maintenanceRequests: ["Leaky faucet", "Broken window"] },
+      potentialTenant: { name: "Jane Smith", applications: ["Parkview Community", "Sunnyvale Homes"] },
+      investor: { name: "Acme Investors", portfolioValue: "$1,200,000", occupancyRate: "92%" }
+    };
+
+    // Save mock data to localStorage
+    function saveMockData(data) {
+      localStorage.setItem(mockDataKey, JSON.stringify(data));
+    }
+
+    // Reset mock data
+    function resetMockData() {
+      saveMockData(originalMockData);
+      messageDiv.textContent = "Demo data has been reset to original.";
+    }
+
+    // On reset button
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      resetMockData();
+    });
+
+    // Initial data setup if none exists
+    if (!localStorage.getItem(mockDataKey)) {
+      resetMockData();
+    }
+
+    // Simulate login
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      const role = userRoleSelect.value;
+      const pwd = passwordInput.value;
+      if (pwd === defaultPasswords[role]) {
+        // Save last logged in role
+        localStorage.setItem("lastLoggedInRole", role);
+        alert(`Logged in as ${role}. Demo data available.`);
+        // Redirect or load mock dashboard - placeholder for future
+      } else {
+        alert("Incorrect password. Please try again.");
+      }
+    });
+  </script>
+</body>
+</html>
